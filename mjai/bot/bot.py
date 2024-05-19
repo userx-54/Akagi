@@ -4,7 +4,6 @@ import hashlib
 import pathlib
 import requests
 
-from my_logger import logger
 
 from . import model
 
@@ -32,7 +31,6 @@ class Bot:
                 if r_json["result"] == "success":
                     self.model_hash = "online"
         except Exception as e:
-            logger.error(e)
             self.online = False
 
     def react(self, events: str) -> str:

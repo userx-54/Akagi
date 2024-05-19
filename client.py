@@ -12,7 +12,6 @@ from threading import Thread
 from typing import Any, Coroutine
 from xmlrpc.client import ServerProxy
 
-from my_logger import logger, game_result_log
 from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, ScrollableContainer, Vertical
@@ -280,7 +279,6 @@ class FlowScreen(Screen):
                 self.query_one("#loading_indicator").remove()
                 self.syncing = False
                 if AUTOPLAY and len(self.app.mjai_msg_dict[self.flow_id]) > 0:
-                    logger.log("CLICK", self.app.mjai_msg_dict[self.flow_id][-1])
                     self.app.set_timer(2, self.autoplay)
             if self.mjai_msg_idx < len(self.app.mjai_msg_dict[self.flow_id]):
                 bridge = self.app.bridge[self.flow_id]
@@ -359,17 +357,13 @@ class FlowScreen(Screen):
                     recommandation.update(latest_mjai_msg, player_state)
                 
                 # Action
-                logger.info(f"Current tehai: {tehai}")
-                logger.info(f"Current tsumohai: {tsumohai}")
                 self.tehai = tehai
                 self.tsumohai = tsumohai
                 if not self.syncing and ENABLE_PLAYWRIGHT and AUTOPLAY:
-                    logger.log("CLICK", latest_mjai_msg)
                     self.app.set_timer(0.15, self.autoplay)
                     # self.autoplay(tehai, tsumohai)
                     
         except Exception as e:
-            logger.error(e)
             pass
 
     @on(Checkbox.Changed, "#checkbox_autoplay")
@@ -392,7 +386,6 @@ class FlowScreen(Screen):
         try:
             self.action.mjai2action(self.app.mjai_msg_dict[self.flow_id][-1], self.tehai, self.tsumohai, None, True)
         except Exception as e:
-            logger.error(e)
             if self.dahai_verfication_job is not None:
                 self.dahai_verfication_job.stop()
                 self.dahai_verfication_job = None
@@ -701,7 +694,6 @@ class Akagi(App):
                 assert isinstance(messages, bytes)
                 self.messages_dict[flow_id].append(messages)
                 liqi_msg = self.liqi[flow_id].parse(messages)
-                logger.info(liqi_msg)
                 if liqi_msg is not None:
                     self.liqi_msg_dict[flow_id].append(liqi_msg)
                     if liqi_msg['method'] == '.lq.FastTest.authGame' and liqi_msg['type'] == MsgType.Req:
@@ -752,7 +744,6 @@ def exit_handler():
     global mitm_exec
     try:
         mitm_exec.kill()
-        logger.info("Stop Akagi")
     except:
         pass
     pass
@@ -780,7 +771,6 @@ if __name__ == '__main__':
     app = Akagi(rpc_server=s)
     atexit.register(exit_handler)
     try:
-        logger.info("Start Akagi")
         app.run()
     except Exception as e:
         exit_handler()

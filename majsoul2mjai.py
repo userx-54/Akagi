@@ -6,7 +6,6 @@ from liqi import MsgType
 from convert import MS_TILE_2_MJAI_TILE, MJAI_TILE_2_MS_TILE
 from liqi import LiqiProto
 from functools import cmp_to_key
-from my_logger import logger, game_result_log
 
 class Operation:
     NoEffect = 0
